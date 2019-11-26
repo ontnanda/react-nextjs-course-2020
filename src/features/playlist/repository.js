@@ -13,3 +13,15 @@ export function getMyPlaylist({ token }) {
     token,
   })
 }
+
+export function getSearchResult({ token, limit = 18, q = '' } = {}) {
+  return fetchAPI({
+    path: '/search/',
+    token,
+    params: {
+      q,
+      limit,
+      type: 'album,playlist',
+    },
+  })
+}
