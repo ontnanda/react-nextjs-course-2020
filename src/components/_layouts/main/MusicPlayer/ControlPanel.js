@@ -3,6 +3,8 @@ import { Flex, Box } from '@grid'
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome'
 import colors from '@features/_ui/colors'
 
+import { inject } from '@lib/store'
+
 function ButtonControl({ icon, circle = false, active = false, onClick }) {
   const css = {
     background: 'transparent',
@@ -39,16 +41,39 @@ function ControlPanel({ playerStore }) {
         <ButtonControl icon="step-backward" onClick={() => {}} />
       </Box>
       <Box>
-        <ButtonControl icon="play" circle={true} onClick={() => {}} />
+        <ButtonControl
+          icon={playerStore.nowPlaying.playing === true ? 'pause' : 'play'}
+          circle={true}
+          onClick={() => {
+            let track = {
+              playing: !playerStore.nowPlaying.playing,
+              id: playerStore.nowPlaying.id,
+              name: playerStore.nowPlaying.title,
+              artist: playerStore.nowPlaying.subTitle,
+              image: playerStore.nowPlaying.image,
+              previewUrl: playerStore.nowPlaying.url,
+              playedSeconds: playerStore.nowPlaying.playedSeconds,
+              loadedSeconds: playerStore.nowPlaying.loadedSeconds,
+              timeElapsed: playerStore.nowPlaying.timeElapsed,
+            }
+            playerStore.play(track)
+          }}
+        />
       </Box>
       <Box>
         <ButtonControl icon="step-forward" onClick={() => {}} />
       </Box>
       <Box>
-        <ButtonControl icon="redo-alt" active={false} onClick={() => {}} />
+        <ButtonControl
+          icon="redo-alt"
+          active={false}
+          onClick={() => {
+            playerStore.reset()
+          }}
+        />
       </Box>
     </Flex>
   )
 }
 
-export default ControlPanel
+export default inject('playerStore')(ControlPanel)

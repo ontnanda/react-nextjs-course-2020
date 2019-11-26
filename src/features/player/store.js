@@ -1,22 +1,55 @@
+import { observable, action, computed } from 'mobx'
+import { convertSecondsToMinutes } from './utilities'
 export default class PlayerStore {
+  @observable
   nowPlaying = {
-    playing: true,
-    title: 'ไกลแค่ไหน คือ ใกล้',
-    subTitle: 'Getsunova',
-    image: 'https://i.scdn.co/image/ab67616d0000b273e76e64aa449965dd5e439c53',
-    url:
-      'https://p.scdn.co/mp3-preview/f0521c21357ae522872b59cf4dd082ad65880fe8?cid=e4abb1ea8fdf4926a463960abd146fcb',
+    id: '',
+    playing: false,
+    title: '',
+    subTitle: '',
+    progress: 0.0,
+    image: '',
+    playedSeconds: 0.0,
+    loadedSeconds: 0.0,
+    url: '',
   }
 
+  @action
   play(track) {
-    const { previewUrl, name, artist, image } = track
-
-    this.nowPlaying.playing = true
+    const {
+      previewUrl,
+      name,
+      artist,
+      image,
+      playing,
+      playedSeconds = 0,
+      loadedSeconds = 0,
+      id = '',
+    } = track
+    if (!previewUrl) return
+    this.nowPlaying.id = id
+    this.nowPlaying.playing = playing
     this.nowPlaying.title = name
     this.nowPlaying.subTitle = artist
     this.nowPlaying.image = image
     this.nowPlaying.url = previewUrl
+    this.nowPlaying.playedSeconds = playedSeconds
+    this.nowPlaying.loadedSeconds = convertSecondsToMinutes(loadedSeconds)
+    this.nowPlaying.timeElapsed = convertSecondsToMinutes(
+      this.nowPlaying.playedSeconds,
+    )
+    this.nowPlaying.progress = parseFloat(playedSeconds / loadedSeconds)
+  }
 
-    console.log('Now Playing:', this.nowPlaying.title)
+  @action
+  reset() {
+    const url = this.nowPlaying.url
+    this.nowPlaying.url = this.nowPlaying.url + '#'
+    this.nowPlaying.playedSeconds = 0
+    this.nowPlaying.loadedSeconds = 0
+    this.nowPlaying.timeElapsed = 0
+    this.nowPlaying.progress = 0
+
+    this.tempUrl = url
   }
 }

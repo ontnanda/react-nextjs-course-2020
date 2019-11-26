@@ -4,26 +4,53 @@ import { Flex, Box } from '@grid'
 import colors from '@features/_ui/colors'
 import { convertSecondsToMinutes } from '@features/player/utilities'
 
-import PlayerStore from '@features/player/store'
+// import PlayerStore from '@features/player/store'
 
-export default function SongListItem({ track }) {
+import { inject } from '@lib/store'
+
+export default inject('playerStore')(SongListItem)
+function SongListItem({ track, playerStore }) {
   const [hover, setHover] = useState(false)
 
   if (track.previewUrl === null) {
     return null
   }
 
-  const playerStore = new PlayerStore()
-
+  // const playerStore = new PlayerStore()
+  let icon = 'music'
+  let bgHover = {
+    '&:hover': {
+      background: colors.background.light,
+    },
+  }
+  if (
+    track.id === playerStore.nowPlaying.id &&
+    playerStore.nowPlaying.id !== ''
+  ) {
+    if (playerStore.nowPlaying.playing) {
+      icon = 'pause'
+      bgHover = {
+        background: colors.background.light,
+      }
+    } else {
+      icon = 'play'
+    }
+  } else {
+    if (hover) {
+      icon = 'play'
+    } else {
+      icon = 'music'
+    }
+  }
   return (
     <Box
       width={1}
-      css={{
-        '&:hover': {
-          background: colors.background.light,
-        },
+      css={bgHover}
+      onMouseOver={() => {
+        setHover(true)
+        // setTrakIdHover(track.id)
+        // console.log(track.id)
       }}
-      onMouseOver={() => setHover(true)}
       onMouseOut={() => setHover(false)}>
       <Flex
         flexWrap="wrap"
@@ -40,11 +67,17 @@ export default function SongListItem({ track }) {
               cursor: 'pointer',
             }}
             onClick={() => {
-              console.log('Play', track)
+              track.playing =
+                track.id === playerStore.nowPlaying.id
+                  ? !playerStore.nowPlaying.playing
+                  : true
+              track.playedSeconds = 0
+              track.loadedSeconds = 0
+              track.timeElapsed = 0
               playerStore.play(track)
             }}>
             <Icon
-              icon={hover ? 'play' : 'music'}
+              icon={icon}
               css={{
                 color: colors.link,
               }}
