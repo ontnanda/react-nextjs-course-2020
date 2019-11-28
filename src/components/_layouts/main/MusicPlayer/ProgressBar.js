@@ -1,17 +1,10 @@
-import React from 'react'
+import React, { useRef } from 'react'
 import { Flex, Box } from '@grid'
 
 import { inject } from '@lib/store'
 
-ProgressBar.defaultProps = {
-  timeElapsed: '0:00',
-  progress: 0.2,
-  duration: '0:30',
-}
-
 function ProgressBar(props) {
-  const { duration, playerStore } = props
-
+  const { playerStore } = props
   return (
     <Flex
       justifyContent="space-between"
@@ -21,7 +14,7 @@ function ProgressBar(props) {
         alignItems: 'center',
       }}>
       <Box css={{ fontSize: '0.7em', padding: '10px' }}>
-        {playerStore.nowPlaying.timeElapsed}
+        {playerStore.progressBar.timeElapsed}
       </Box>
       <Box
         css={{
@@ -46,7 +39,7 @@ function ProgressBar(props) {
                 borderRadius: '5px',
               },
             }}
-            value={playerStore.nowPlaying.progress}
+            value={playerStore.progressBar.progress}
             max={1}
           />
           <input
@@ -65,16 +58,33 @@ function ProgressBar(props) {
             min={0}
             max={1}
             step="any"
-            value={playerStore.nowPlaying.progress}
-            onClick={() => {}}
+            value={playerStore.progressBar.progress}
+            onClick={e => {}}
             onMouseDown={() => {}}
-            onChange={() => {}}
+            onChange={e => {
+              let track = {
+                playing: playerStore.nowPlaying.playing,
+                id: playerStore.nowPlaying.id,
+                name: playerStore.nowPlaying.title,
+                artist: playerStore.nowPlaying.subTitle,
+                image: playerStore.nowPlaying.image,
+                previewUrl: playerStore.nowPlaying.url,
+                playedSeconds:
+                  e.target.value * playerStore.progressBar.loadedSecondsRaw,
+                loadedSeconds: playerStore.progressBar.loadedSecondsRaw,
+              }
+              track.progress = e.target.value
+              if (playerStore.nowPlaying.id) {
+                playerStore.seekFunction.seekTo(track.playedSeconds)
+              }
+              playerStore.play(track)
+            }}
             onMouseUp={() => {}}
           />
         </div>
       </Box>
       <Box css={{ fontSize: '0.7em', padding: '10px' }}>
-        {playerStore.nowPlaying.loadedSeconds}
+        {playerStore.progressBar.loadedSeconds}
       </Box>
     </Flex>
   )

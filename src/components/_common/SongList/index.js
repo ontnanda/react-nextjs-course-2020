@@ -1,8 +1,16 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Flex } from '@grid'
 import SongListItem from './SongListItem'
+import { inject } from '@lib/store'
 
-export default function SongList({ tracks }) {
+export default inject('playerStore')(SongList)
+
+function SongList({ tracks, playerStore }) {
+  useEffect(() => {
+    playerStore.initQueue(tracks)
+    console.log('Attch')
+  }, [])
+
   return (
     <Flex
       flexWrap="wrap"

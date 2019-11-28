@@ -35,10 +35,25 @@ function ControlPanel({ playerStore }) {
   return (
     <Flex>
       <Box>
-        <ButtonControl icon="random" active={false} onClick={() => {}} />
+        <ButtonControl
+          icon="random"
+          active={playerStore.playState.random}
+          css={{
+            color: playerStore.playState.random ? 'green' : colors.link,
+            width: '10px',
+          }}
+          onClick={() => {
+            playerStore.random()
+          }}
+        />
       </Box>
       <Box>
-        <ButtonControl icon="step-backward" onClick={() => {}} />
+        <ButtonControl
+          icon="step-backward"
+          onClick={() => {
+            playerStore.backPlay()
+          }}
+        />
       </Box>
       <Box>
         <ButtonControl
@@ -57,18 +72,28 @@ function ControlPanel({ playerStore }) {
               timeElapsed: playerStore.nowPlaying.timeElapsed,
             }
             playerStore.play(track)
+            playerStore.updateProgress(track)
           }}
         />
       </Box>
       <Box>
-        <ButtonControl icon="step-forward" onClick={() => {}} />
+        <ButtonControl
+          icon="step-forward"
+          onClick={() => {
+            playerStore.nextPlay()
+          }}
+        />
       </Box>
       <Box>
         <ButtonControl
           icon="redo-alt"
-          active={false}
+          active={playerStore.playState.loop}
+          css={{
+            color: playerStore.playState.loop ? 'green' : colors.link,
+            width: '10px',
+          }}
           onClick={() => {
-            playerStore.reset()
+            playerStore.loop()
           }}
         />
       </Box>

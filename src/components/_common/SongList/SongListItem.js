@@ -71,15 +71,14 @@ function SongListItem({ track, playerStore }) {
                 track.id === playerStore.nowPlaying.id
                   ? !playerStore.nowPlaying.playing
                   : true
-              track.playedSeconds = 0
-              track.loadedSeconds = 0
-              track.timeElapsed = 0
+
               playerStore.play(track)
             }}>
             <Icon
               icon={icon}
               css={{
-                color: colors.link,
+                color:
+                  icon === 'play' || icon === 'pause' ? 'green' : colors.link,
               }}
             />
           </button>
